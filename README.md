@@ -10,8 +10,9 @@
 - The newly developed training-free RDED significantly outperforms previous methods in efficiency and maintains effectiveness, yet it overlooks the potential information loss due to the lack of image optimization
 - Some simple but promising techniques (e.g., smoothing the learning rate schedule) that could enhance performance have been underexplored in existing literature.
 
-These drawbacks show the constraints of previous methods in several respects, highlighting the need for a thorough investigation and assessment of these issues. Therefore, Elucidate Dataset Condensation (EDC), which includes a range of detailed
-and effective enhancements, is developed to remedy these drawbacks of dataset distillation. 
+These drawbacks show the constraints of previous methods in several respects, highlighting the need for a thorough investigation and assessment of these issues. Therefore, Elucidate Dataset Condensation (EDC), which includes a range of detailed and effective enhancements, is developed to remedy these drawbacks of dataset distillation. 
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/edc.png)
 
 # Dataset Condensation
 
@@ -64,3 +65,10 @@ The optimization objective $L(θ)$ can be expanded through a second-order Taylor
 
 ### Irrational Hyperparameter Settings
 
+RDED adopts a smoothing LR schedule and use a reduced batch size for post-evaluation on the full 224×224 ImageNet-1k. These changes, although critical, lack detailed explanations and impact assessments in the existing literature. Our empirical analysis highlights a remarkable impact on performance: absent these modifications, RDED achieves only 25.8% accuracy on ResNet18 with IPC 10. With these modifications, however, accuracy jumps to 42.0%. This work aims to fill the gap by providing the first comprehensive empirical analysis and ablation study on the effects of these and similar improvements in the field.
+
+##  Our Solutions
+
+### Real Image Initialization
+
+Intuitively, using real images instead of Gaussian noise for data initialization during the data synthesis phase is a practical and effective strategy. This method significantly improves the realism of the condensed dataset and simplifies the optimization process, thus enhancing the synthesized dataset’s ability to generalize in post-evaluation tests.
