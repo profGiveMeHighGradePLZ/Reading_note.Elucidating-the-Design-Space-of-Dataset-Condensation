@@ -39,3 +39,24 @@ critical attributes of $D^T$ to ensure robust or comparable performance during e
 The data synthesis process primarily determines the quality of the distilled datasets
 
 # Improved Design Choices
+
+## Limitations of Prior Methods
+
+### Lacking Realism
+
+Training-dependent condensation algorithms for datasets, particularly those employed for large-scale datasets, typically initiate the optimization process using Gaussian noise inputs. This initial choice complicates the optimization process and often
+results in the generation of synthetic images that do not exhibit high levels of realism.
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/lacking%20realism.png)
+
+### Coarse-grained Matching Mechanism
+
+The Statistical Matching (SM)-based pipeline exhibits two critical drawbacks:
+
+- it does not account for the domain discrepancies among different categories
+- it fails to preserve the integrity of category-specific information across the original and condensed samples within each batch.
+
+These limitations result in a coarse-grained matching approach that diminishes the accuracy of the matching process.
+
+### Overly Sharp of Loss Landscape
+
