@@ -60,3 +60,7 @@ These limitations result in a coarse-grained matching approach that diminishes t
 
 ### Overly Sharp of Loss Landscape
 
+The optimization objective $L(θ)$ can be expanded through a second-order Taylor expansion. However, earlier training-dependent condensation algorithms neglect to minimize the Frobenius norm of the Hessian matrix H to obtain a flat loss landscape for enhancing its generalization capability through sharpness-aware minimization theory.
+
+### Irrational Hyperparameter Settings
+
