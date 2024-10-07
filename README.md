@@ -148,10 +148,31 @@ should equal zero. As a result, we choose to apply flatness regularization exclu
 
 - Softmax(·), $τ$ and $`ϕ`$ represent the softmax operator, the temperature coefficient and the pretrained observer model respectively
 
-##### It is evident that $`L′_{FR}`$ significantly lowers the Frobenius norm of the Hessian matrix relative to standard training, thus confirming its efficacy in pushing a flatter loss landscape.
-
 ![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/flatness.png)
+
+##### (top)It is evident that $`L′_{FR}`$ significantly lowers the Frobenius norm of the Hessian matrix relative to standard training, thus confirming its efficacy in pushing a flatter loss landscape.
+
 
 In post-evaluation, we observe that a method analogous to $L′_{FR}$ employing SAM does not lead to appreciable performance improvements. This result is likely due to the limited sample size of the condensed dataset, which hinders the model’s ability to fully converge post-training, thereby undermining the advantages of flatness regularization. Conversely, the integration of an EMA-updated model as the validated model markedly stabilizes performance variations during evaluations. We term this strategy EMA-based evaluation and apply it across all benchmark experiments.
 
 ## Smoothing Learning Rate (LR) Schedule and Smaller Batch Size
+
+To optimize the training with condensed samples, we implement a smoothed LR schedule that moderates the learning rate reduction throughout the training duration. This approach helps avoid early convergence to suboptimal minima, thereby enhancing the model’s generalization capabilities. The mathematical formulation of this schedule is given by:
+
+$$
+\mu(i) = \frac{1 + \cos\left(\frac{i\pi}{\zeta N}\right)}{2}
+$$
+
+-  $i$ represents the current epoch
+-  $N$ is the total number of epochs
+-  $µ(i)$ is the learning rate for the $i$-th epoch
+-  $ζ$ is the deceleration factor.
+-  Notably, a $ζ$ value of 1 corresponds to a typical cosine learning rate schedule, whereas setting $ζ$ to 2 improves performance metrics from 34.4% to 38.7% and effectively moderates loss landscape sharpness during post-evaluation.
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/flatness.png)
+
+- The gradient from a random batch in $X^S$ effectively approximates the global gradient.(bottom)
+Leveraging this alignment, we can use smaller batch sizes to significantly increase the number of iterations, which helps prevent model under-convergence during post-evaluation.
+
+## Weak Augmentation and Better Backbone Choice
+
