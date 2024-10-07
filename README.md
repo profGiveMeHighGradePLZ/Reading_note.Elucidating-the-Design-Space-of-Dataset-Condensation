@@ -176,3 +176,10 @@ Leveraging this alignment, we can use smaller batch sizes to significantly incre
 
 ## Weak Augmentation and Better Backbone Choice
 
+The principal role of these two design decisions is to address the flawed settings in the baseline G-VBSM: the minimum area threshold for cropping during data synthesis was too restrictive, thereby diminishing the quality of the condensed dataset
+
+To rectify this:
+- we implement mild augmentations to increase this minimum cropping threshold, thereby improving the dataset condensation’s ability to generalize.
+- we substitute the computationally demanding EfficientNet-B0 with more streamlined AlexNet for generating soft labels on ImageNet-1k, a change we refer to as an improved backbone selection. This modification maintains the performance without degradation
+
+# Experiments
