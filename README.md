@@ -127,30 +127,31 @@ The applicable SAM algorithm aims to solve the following maximum minimization pr
 
 - $`L_S(f_θ)`$, $`ϵ`$, $`ρ`$, and $`θ`$ refer to the loss $`\frac{1}{|S|} \sum_{(x_i, y_i) \sim S} \ell(f_{\theta}(x_i), y_i)`$, the perturbation, the pre-defined flattened region, and the model parameter, respectively.
 
-During the data synthesis phase, the use of sharpness-aware minimization (SAM) algorithms is beneficial for reducing the sharpness of the loss landscape. Nonetheless, traditional SAM approaches generally double the computational load due to their two-stage parameter update process. This increase in computational demand is often impractical during data synthesis.
+##
 
-A lightweight flatness regularization approach for implementing SAM during data synthesis is introduced.
+During the data synthesis phase
+- The use of sharpness-aware minimization (SAM) algorithms is beneficial for reducing the sharpness of the loss landscape.
+- Traditional SAM approaches generally double the computational load due to their two-stage parameter update process. This increase in computational demand is often impractical during data synthesis.
 
-This method utilizes a teacher dataset, $X_{EMA}^S$, maintained via exponential moving average (EMA). The
-newly formulated optimization goal aims to foster a flat loss landscape in the following manner:
+A lightweight flatness regularization approach for implementing SAM during data synthesis is introduced.This method utilizes a teacher dataset, $X_{EMA}^S$, maintained via exponential moving average (EMA). The newly formulated optimization goal aims to foster a flat loss landscape in the following manner:
 
-![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/l'fr.png)
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/lfr.png)
 
 - $β$ is the weighting coefficient, which is empirically set to 0.99 in our experiments
 
-The critical theoretical result is articulated as follows:
+##### The critical theoretical result is articulated as follows: $`\text{The optimization objective $L_{FR}$ can ensure sharpness-aware minimization within a $`1`$-ball for each point along a straight path between $`X^S`$ and $X_{EMA}^S$.}`$
 
-The optimization objective $L_{FR}$ can ensure sharpness-aware minimization within a $`1`$-ball for each point along a straight path between $`X^S`$ and $X_{EMA}^S$.
-
-This indicates that the primary optimization goal of LFR deviates somewhat from that of traditional SAM-based algorithms, which are designed to achieve a flat loss landscape around $X^S$. While both $L^{FR}$ and conventional SAM-based methods are capable of performing sharpness-aware training, our findings unfortunately demonstrate that various SM-based loss functions do not converge to zero. This failure to converge contradicts the basic premise that the first-order term in the Taylor expansion
+This indicates that the primary optimization goal of $L_{FR}$ deviates somewhat from that of traditional SAM-based algorithms, which are designed to achieve a flat loss landscape around $X^S$. While both $L^{FR}$ and conventional SAM-based methods are capable of performing sharpness-aware training, our findings unfortunately demonstrate that various SM-based loss functions do not converge to zero. This failure to converge contradicts the basic premise that the first-order term in the Taylor expansion
 should equal zero. As a result, we choose to apply flatness regularization exclusively to the logits of the observer model, since the cross-entropy loss for these can more straightforwardly reach zero.
 
-![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/flatness.png)
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/l'fr.png)
 
 - Softmax(·), $τ$ and $`ϕ`$ represent the softmax operator, the temperature coefficient and the pretrained observer model respectively
 
-It is evident that $`L′_{FR}`$ significantly lowers the Frobenius norm of the Hessian matrix relative to standard training, thus confirming its efficacy in pushing a flatter loss landscape.
+##### It is evident that $`L′_{FR}`$ significantly lowers the Frobenius norm of the Hessian matrix relative to standard training, thus confirming its efficacy in pushing a flatter loss landscape.
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/flatness.png)
 
 In post-evaluation, we observe that a method analogous to $L′_{FR}$ employing SAM does not lead to appreciable performance improvements. This result is likely due to the limited sample size of the condensed dataset, which hinders the model’s ability to fully converge post-training, thereby undermining the advantages of flatness regularization. Conversely, the integration of an EMA-updated model as the validated model markedly stabilizes performance variations during evaluations. We term this strategy EMA-based evaluation and apply it across all benchmark experiments.
 
-#### Smoothing Learning Rate (LR) Schedule and Smaller Batch Size
+## Smoothing Learning Rate (LR) Schedule and Smaller Batch Size
