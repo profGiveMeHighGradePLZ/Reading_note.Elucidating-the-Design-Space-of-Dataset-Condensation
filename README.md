@@ -24,7 +24,7 @@ $D^S := \{(x_{i}^{S}, y_{i}^{S})\}_{i=1}^{|D^S|}$
 
 - consisting of images $X^S$ and labels $Y^S$
 
-designed to be as informative as the original dataset:
+Designed to be as informative as the original dataset:
 
 $D^T := \{(x_{i}^{T}, y_{i}^{T})\}_{i=1}^{|D^T|}$ 
 
@@ -37,20 +37,20 @@ critical attributes of $D^T$ to ensure robust or comparable performance during e
 
 - $\ell_{\text{eval}}(\cdot, \cdot, \phi^*)$ represents the evaluation loss function, such as cross-entropy loss, which is parameterized by the neural network $ϕ^∗$ that has been optimized from the distilled dataset $D^S$
 
-The data synthesis process primarily determines the quality of the distilled datasets
+The data synthesis process primarily determines the quality of the distilled datasets.
 
 # Improved Design Choices
 
-## Limitations of Prior Methods
+# Limitations of Prior Methods
 
-### Lacking Realism
+## Lacking Realism
 
 Training-dependent condensation algorithms for datasets, particularly those employed for large-scale datasets, typically initiate the optimization process using Gaussian noise inputs. This initial choice complicates the optimization process and often
 results in the generation of synthetic images that do not exhibit high levels of realism.
 
 ![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/lacking%20realism.png)
 
-### Coarse-grained Matching Mechanism
+## Coarse-grained Matching Mechanism
 
 The Statistical Matching (SM)-based pipeline exhibits two critical drawbacks:
 
@@ -59,16 +59,98 @@ The Statistical Matching (SM)-based pipeline exhibits two critical drawbacks:
 
 These limitations result in a coarse-grained matching approach that diminishes the accuracy of the matching process.
 
-### Overly Sharp of Loss Landscape
+## Overly Sharp of Loss Landscape
 
 The optimization objective $L(θ)$ can be expanded through a second-order Taylor expansion. However, earlier training-dependent condensation algorithms neglect to minimize the Frobenius norm of the Hessian matrix H to obtain a flat loss landscape for enhancing its generalization capability through sharpness-aware minimization theory.
 
-### Irrational Hyperparameter Settings
+## Irrational Hyperparameter Settings
 
-RDED adopts a smoothing LR schedule and use a reduced batch size for post-evaluation on the full 224×224 ImageNet-1k. These changes, although critical, lack detailed explanations and impact assessments in the existing literature. Our empirical analysis highlights a remarkable impact on performance: absent these modifications, RDED achieves only 25.8% accuracy on ResNet18 with IPC 10. With these modifications, however, accuracy jumps to 42.0%. This work aims to fill the gap by providing the first comprehensive empirical analysis and ablation study on the effects of these and similar improvements in the field.
+RDED adopts a smoothing LR schedule and uses a reduced batch size for post-evaluation on the full 224×224 ImageNet-1k. These changes, although critical, lack detailed explanations and impact assessments in the existing literature. Our empirical analysis highlights a remarkable impact on performance: absent these modifications, RDED achieves only 25.8% accuracy on ResNet18 with IPC 10. With these modifications, however, accuracy jumps to 42.0%. This work aims to fill the gap by providing the first comprehensive empirical analysis and ablation study on the effects of these and similar improvements in the field.
 
 ##  Our Solutions
 
-### Real Image Initialization
+## Real Image Initialization
 
-Intuitively, using real images instead of Gaussian noise for data initialization during the data synthesis phase is a practical and effective strategy. This method significantly improves the realism of the condensed dataset and simplifies the optimization process, thus enhancing the synthesized dataset’s ability to generalize in post-evaluation tests.
+- Using real images instead of Gaussian noise for data initialization during the data synthesis phase.
+
+This method significantly improves the realism of the condensed dataset and simplifies the optimization process, thus enhancing the synthesized dataset’s ability to generalize in post-evaluation tests.
+
+- Incorporating considerations of information density and efficiency by employing a training-free condensed dataset (typically via RDED) for initialization at the start of the synthesis process.
+  
+The cost of transporting from a Gaussian distribution to the original data distribution is higher than using the training-free condensed distribution as the initial reference. This advantage also allows us to reduce the number of iterations needed to achieve results to half of those required by our baseline G-VBSM model, significantly boosting synthesis efficiency.
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/real%20image.png)
+
+## Soft Category-Aware Matching
+
+Previous dataset condensation methods based on the Statistical Matching (SM) framework have shown satisfactory results predominantly when the data follows an unimodal distribution (e.g., a single Gaussian).
+
+### Limitation of this method:
+
+Datasets consist of multiple classes with significant variations among their class distributions. Traditional SM-based methods compress data by collectively processing all samples, thus neglecting the differences between classes.
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/soft%20category-aware%20matching.png)
+
+-  As shown in the top part, this method enhances information density but also creates a big mismatch between the condensed source distribution $X^S$ and the target distribution $X^T$
+
+The use of a Gaussian Mixture Model (GMM) to effectively approximate any complex distribution to tackle this problem. This solution is theoretically justifiable by the Tauberian Theorem under certain conditions. In light of this, we define two specific approaches to Statistical Matching:
+
+- Given $N$ random samples  $`\{x_i\}_{i=1}^N`$  with an unknown distribution  $`p_{mix}(x)`$.
+- Form (1): involves synthesizing $M$ distilled samples $`\{y_i\}_{i=1}^M`$ ,where $`M ≪ N`$, ensuring that the variances and means of both  $`\{x_i\}_{i=1}^N`$  and  $`\{y_i\}_{i=1}^M`$  are consistent.
+- Form (2): treats $`p_{mix}(x)`$ as a $GMM$ with $C$ components. For random samples $`\{x_i^j\}_{i=1}^{N_j} \quad \left( \sum_{j} N_j = N \right)`$  within each component $`c_j`$ , we synthesize  $`M_j \quad \left( \sum_{j} M_j = M \right)`$  distilled samples $`\{y_i^j\}_{i=1}^{M_j}`$, where $`M_j ≪ N_j`$ , to maintain the consistency of variances and means between
+$`\{x_{j_i}\}_{i=1}^{N_j} \quad \text{and} \quad \{y_{j_i}\}_{i=1}^{M_j}`$
+
+However, our empirical result indicates that exclusive reliance on Form (1) yields a synthesized dataset that lacks sufficient
+information density. Consequently, we propose for a hybrid method that effectively integrates Form(1) and Form(2) using a weighted average, which we term soft category-aware matching.
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/ema.png)
+
+- $C$ represents the total number of components
+- $c_i$ indicates the $i-th$ component within a GMM,
+- $α$ is a coefficient for adjusting the balance.
+
+The modified loss function $`L'_{\text{syn}}`$ is designed to 
+effectively regulate the information density of $`X^S`$ and to align the distribution of $`X^S`$ with that of $`X^T`$. Operationally, each category in the original dataset is mapped to a distinct component in the GMM framework. Particularly, when $`α`$ = 1, the sophisticated category-aware matching described by
+$`L'_{\text{syn}}`$ simplifies to the basic statistical matching defined by $`L_{\text{syn}}`$.
+
+(unfinished)
+
+## Flatness Regularization and EMA-based Evaluation 
+
+These two choices are utilized to ensure flat-loss landscapes during the stages of data synthesis and post-evaluation, respectively.
+
+### sharpness-aware minimization (SAM)
+
+The applicable SAM algorithm aims to solve the following maximum minimization problem:
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/sma.png)
+
+- $`L_S(f_θ)`$, $`ϵ`$, $`ρ`$, and $`θ`$ refer to the loss $`\frac{1}{|S|} \sum_{(x_i, y_i) \sim S} \ell(f_{\theta}(x_i), y_i)`$, the perturbation, the pre-defined flattened region, and the model parameter, respectively.
+
+During the data synthesis phase, the use of sharpness-aware minimization (SAM) algorithms is beneficial for reducing the sharpness of the loss landscape. Nonetheless, traditional SAM approaches generally double the computational load due to their two-stage parameter update process. This increase in computational demand is often impractical during data synthesis.
+
+A lightweight flatness regularization approach for implementing SAM during data synthesis is introduced.
+
+This method utilizes a teacher dataset, $X_{EMA}^S$, maintained via exponential moving average (EMA). The
+newly formulated optimization goal aims to foster a flat loss landscape in the following manner:
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/l'fr.png)
+
+- $β$ is the weighting coefficient, which is empirically set to 0.99 in our experiments
+
+The critical theoretical result is articulated as follows:
+
+The optimization objective $L_{FR}$ can ensure sharpness-aware minimization within a $`1`$-ball for each point along a straight path between $`X^S`$ and $X_{EMA}^S$.
+
+This indicates that the primary optimization goal of LFR deviates somewhat from that of traditional SAM-based algorithms, which are designed to achieve a flat loss landscape around $X^S$. While both $L^{FR}$ and conventional SAM-based methods are capable of performing sharpness-aware training, our findings unfortunately demonstrate that various SM-based loss functions do not converge to zero. This failure to converge contradicts the basic premise that the first-order term in the Taylor expansion
+should equal zero. As a result, we choose to apply flatness regularization exclusively to the logits of the observer model, since the cross-entropy loss for these can more straightforwardly reach zero.
+
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/flatness.png)
+
+- Softmax(·), $τ$ and $`ϕ`$ represent the softmax operator, the temperature coefficient and the pretrained observer model respectively
+
+It is evident that $`L′_{FR}`$ significantly lowers the Frobenius norm of the Hessian matrix relative to standard training, thus confirming its efficacy in pushing a flatter loss landscape.
+
+In post-evaluation, we observe that a method analogous to $L′_{FR}$ employing SAM does not lead to appreciable performance improvements. This result is likely due to the limited sample size of the condensed dataset, which hinders the model’s ability to fully converge post-training, thereby undermining the advantages of flatness regularization. Conversely, the integration of an EMA-updated model as the validated model markedly stabilizes performance variations during evaluations. We term this strategy EMA-based evaluation and apply it across all benchmark experiments.
+
+#### Smoothing Learning Rate (LR) Schedule and Smaller Batch Size
