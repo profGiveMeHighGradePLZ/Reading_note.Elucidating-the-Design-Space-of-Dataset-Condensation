@@ -183,3 +183,30 @@ To rectify this:
 - we substitute the computationally demanding EfficientNet-B0 with more streamlined AlexNet for generating soft labels on ImageNet-1k, a change we refer to as an improved backbone selection. This modification maintains the performance without degradation
 
 # Experiments
+
+To validate the effectiveness of EDC:
+- conduct comparative experiments across various datasets, including ImageNet-1k, ImageNet-10, Tiny-ImageNet, CIFAR-100, and CIFAR-10.
+- explore cross-architecture generalization and ablation studies on ImageNet-1k.
+- All experiments are conducted using 4× RTX 4090 GPUs
+
+Network Architectures:
+   - uses ResNet-{18, 50, 101} as our verified models
+   - extend our evaluation to include MobileNet-V2
+   - explore cross-architecture generalization further with recently advanced backbones such as DeiT-Tiny and Swin-Tiny
+
+Baselines:
+   - compare our work with several recent state-of-the-art methods, including SRe2L, G-VBSM, and RDED to assess broader practical impacts.
+   - omitted several traditional methods from our analysis. This exclusion is due to their inadequate performance on the large-scale ImageNet-1k and their lesser effectiveness when applied to practical networks such as ResNet, MobileNet-V2, and Swin-Tiny
+
+## Main Results
+
+
+
+
+
+
+
+
+
+
+
