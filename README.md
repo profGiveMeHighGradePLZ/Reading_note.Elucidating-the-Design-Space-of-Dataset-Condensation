@@ -200,13 +200,19 @@ Baselines:
 
 ## Main Results
 
+Experimental Comparison: 
 
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/comparison.png)
 
+- Particularly notable is the performance leap in the highly compressed IPC1 scenario using ResNet-18, where EDC markedly outperforms the latest state-of-the-art method, RDED
+- Performance rises from 22.9%, 11.0%, 7.0%, 24.9%, and 6.6% to 32.6%, 39.7%, 39.2%, 45.2%, and 12.8% for CIFAR-10, CIFAR-100, Tiny-ImageNet, ImageNet-10, and ImageNet-1k, respectively.
 
+Cross-Architecture Generalization:
 
+![text image](https://github.com/profGiveMeHighGradePLZ/Reading_note.Elucidating-the-Design-Space-of-Dataset-Condensation/blob/main/image/cag.png)
 
-
-
+During cross-validation that includes all IPCs and the mentioned architectures, EDC consistently achieves
+higher accuracy than RDED, demonstrating its strong generalization capabilities. Specifically, EDC surpasses RDED by significant margins of 8.2% and 14.42% on DeiT-Tiny and ShuffleNet-V2, respectively.
 
 
 
