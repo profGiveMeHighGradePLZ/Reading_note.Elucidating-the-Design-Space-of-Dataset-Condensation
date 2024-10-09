@@ -16,7 +16,7 @@ These drawbacks show the constraints of previous methods in several respects, hi
 
 # Dataset Condensation
 
-Dataset condensation, also known as dataset distillation, has emerged in response to the ever-increasing training demands of advanced deep-learning models. This approach addresses the challenge of requiring high-precision models while also managing substantial resource constraints. In this method, the original dataset acts as a “teacher”, distilling and preserving essential information into a smaller, surrogate “student” dataset. The ultimate goal of this technique is to achieve performance comparable to the original by training models from scratch with the condensed dataset. This approach has become popular in various downstream applications, including continual learning, neural architecture search, and training-free network slimming.
+Dataset condensation, also known as dataset distillation, addresses the challenge of requiring high-precision models while also managing substantial resource constraints. The ultimate goal of this technique is to achieve performance comparable to the original by training models from scratch with the condensed dataset. This approach has become popular in various downstream applications, including continual learning, neural architecture search, and training-free network slimming.
 
 Dataset condensation involves generating a synthetic dataset:
 
